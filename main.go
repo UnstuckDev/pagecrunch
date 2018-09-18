@@ -28,19 +28,30 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		var f func(*html.Node)
-		f = func(n *html.Node) {
-			if n.Type == html.ElementNode {
-				for _, tag := range n.Attr {
+		var walkHTML func(*html.Node)
+
+		// Recursive function to work through HTML and act on nodes
+		walkHTML = func(readHead *html.Node) {
+			// Why readHead? It reflects what's going on: read, advance, read, etc.
+
+			// The original used single character variables (n, c, etc),
+			// which makes them harder to work with in an IDE/editor.
+
+			// Works on current node
+			if readHead.Type == html.ElementNode {
+				for _, tag := range readHead.Attr {
 					tagstats[tag.Key]++
 					charCount += len(tag.Val)
 				}
 			}
-			for c := n.FirstChild; c != nil; c = c.NextSibling {
-				f(c)
+			// Goes ever-deeper with each iteration
+			for childNode := readHead.FirstChild; childNode != nil; childNode = childNode.NextSibling {
+				walkHTML(childNode)
 			}
 		}
-		f(doc)
+
+		// Walk the doc (get it)
+		walkHTML(doc)
 		fmt.Printf("Map of tag counts: %v\n", tagstats)
 		fmt.Printf("Total characters of tag content: %d", charCount)
 	} else {
