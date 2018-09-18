@@ -11,6 +11,7 @@ import (
 
 func main() {
 	tagstats := make(map[string]int)
+	var charCount int
 
 	if 2 == len(os.Args) {
 
@@ -32,6 +33,7 @@ func main() {
 			if n.Type == html.ElementNode {
 				for _, tag := range n.Attr {
 					tagstats[tag.Key]++
+					charCount += len(tag.Val)
 				}
 			}
 			for c := n.FirstChild; c != nil; c = c.NextSibling {
@@ -39,7 +41,8 @@ func main() {
 			}
 		}
 		f(doc)
-		fmt.Printf("%v\n", tagstats)
+		fmt.Printf("Map of tag counts: %v\n", tagstats)
+		fmt.Printf("Total characters of tag content: %d", charCount)
 	} else {
 		log.Printf("Usage: %s <url>", os.Args[1])
 
