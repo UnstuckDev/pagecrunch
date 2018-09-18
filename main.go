@@ -21,6 +21,8 @@ func main() {
 			log.Fatal(err)
 		}
 
+		// Heavily modified form of example on golang.org/x/net/html
+
 		doc, err := html.Parse(resp.Body)
 		if err != nil {
 			log.Fatal(err)
@@ -28,8 +30,8 @@ func main() {
 		var f func(*html.Node)
 		f = func(n *html.Node) {
 			if n.Type == html.ElementNode {
-				for _, a := range n.Attr {
-					tagstats[a.Key]++
+				for _, tag := range n.Attr {
+					tagstats[tag.Key]++
 				}
 			}
 			for c := n.FirstChild; c != nil; c = c.NextSibling {
